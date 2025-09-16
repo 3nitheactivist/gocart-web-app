@@ -1,4 +1,5 @@
-import imagekit from "@/configs/imagekits";
+// 
+import imagekit from "@/configs/imageKits";
 import prisma from "@/lib/prisma";
 import { getAuth } from "@clerk/nextjs/dist/types/server";
 import { optimizeImage } from "next/dist/server/image-optimizer";
