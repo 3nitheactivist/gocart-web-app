@@ -20,7 +20,7 @@ const Navbar = () => {
     router.push(`/shop?search=${search}`);
   };
 
-  console.log(user); // CURRENT USER?
+  
 
   return (
     <nav className="relative bg-white">
