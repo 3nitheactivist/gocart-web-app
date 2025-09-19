@@ -1,8 +1,7 @@
 // 
 import imagekit from "@/configs/imageKits";
 import prisma from "@/lib/prisma";
-import { getAuth } from "@clerk/nextjs/dist/types/server";
-import { optimizeImage } from "next/dist/server/image-optimizer";
+import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 // create the store
@@ -30,7 +29,7 @@ export async function POST(request) {
       !address ||
       !image
     ) {
-      return NextResponse(
+      return NextResponse.json(
         {
           error: "Missing store info",
         },
@@ -89,7 +88,7 @@ export async function POST(request) {
         email,
         contact,
         address,
-        logo: optimizeImage,
+        logo: optimizedImage,
       },
     });
 

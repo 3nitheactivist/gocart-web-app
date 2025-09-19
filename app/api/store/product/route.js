@@ -1,10 +1,10 @@
 import imagekit from "@/configs/imageKits";
 import prisma from "@/lib/prisma";
 import authSeller from "@/middlewares/authSeller";
-import { getAuth } from "@clerk/nextjs/dist/types/server";
+import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-// Add a new product
 
+// Add a new product
 export async function POST(request) {
   try {
     const { userId } = getAuth(request);
@@ -71,12 +71,43 @@ export async function POST(request) {
         category,
         images: imagesUrl,
         storeId,
-      }
+      },
     });
 
-    return NextResponse.json({message: "Product added successfully"})
+    return NextResponse.json({ message: "Product added successfully" });
   } catch (error) {
     console.error();
-    return NextResponse.json({error: error.code || error.message}, {status: 400})
+    return NextResponse.json(
+      { error: error.code || error.message },
+      { status: 400 }
+    );
+  }
+}
+
+// Get all products for a seller
+export async function GET(request) {
+  try {
+    const { userId } = getAuth(request);
+
+    // we'll need a middleware to get the specific  user id for the store id for that user
+    const storeId = await authSeller(userId);
+
+    // suppose we don't find any store Id for the user
+    if (!storeId) {
+      return NextResponse.json({ error: "not authorized" }, { status: 401 });
+    }
+
+    // Finding all products 
+    const products = await prisma.product.findMany({
+      where: { storeId },
+    });
+
+    return NextResponse.json({products})
+  } catch (error) {
+    console.error();
+    return NextResponse.json(
+      { error: error.code || error.message },
+      { status: 400 }
+    );
   }
 }
