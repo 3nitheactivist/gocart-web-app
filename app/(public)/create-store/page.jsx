@@ -37,13 +37,47 @@ export default function CreateStore() {
   const fetchSellerStatus = async () => {
     // Logic to check if the store is already submitted
 
+    const token = await getToken();
+    try {
+      const { data } = await axios.get("/api/store/create", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (["approved", "rejected", "pending"].includes(data.status)) {
+        setStatus(data.status);
+        setAlreadySubmitted(true);
+        switch (data.status) {
+          case "approved":
+            setMessage(
+              "Your store has been approved, you can now add products to your store from dashboard"
+            );
+            setTimeout(() => router.push("/store"), 5000);
+            break;
+
+          case "rejected":
+            setMessage(
+              "Your store request as been rejected, contact the admin for more details"
+            );
+            break;
+          case "pending":
+            setMessage(
+              "Your store request is pending, wait admin to approve your store"
+            );
+            break;
+
+          default:
+            break;
+        }
+      } else{
+        setAlreadySubmitted(false)
+      }
+    } catch (error) {}
     setLoading(false);
   };
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    // Logic to submit the store details
 
+    // Logic to submit the store details
     if (!user) {
       return toast("Please login to contiune");
     }
@@ -76,7 +110,9 @@ export default function CreateStore() {
   if (!user) {
     return (
       <div className="min-h-[80vh] mx-6 flex items-center justify-center text-slate-400">
-        <h1 className="text-2xl sm:text-4xl font-semibold">Please <span className="text-slate-500">Login</span> to continue</h1>
+        <h1 className="text-2xl sm:text-4xl font-semibold">
+          Please <span className="text-slate-500">Login</span> to continue
+        </h1>
       </div>
     );
   }
